@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Form } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { signInWithEmailPassword } from "../../utils/firebase/auth";
-import {useState} from 'react';
+import { useState } from "react";
 
 let ERROR_MESSAGES: any = {
     required: "This field is required",
@@ -19,26 +19,28 @@ export default function LoginForm() {
         setError,
         formState: { errors },
     } = useForm();
-    const [loading,setLoading]=useState(false);
+    const [loading, setLoading] = useState(false);
     function onSubmit(data: any) {
         setLoading(true);
-        signInWithEmailPassword(data.email, data.password).catch((error) => {
-            if (!ERROR_MESSAGES[error.code]) {
-                ERROR_MESSAGES[error.code] = error.message;
-            }
-            console.log(error.code);
-            let field = "password";
-            switch (error.code) {
-                case "auth/user-not-found": {
-                    field = "email";
-                    break;
+        signInWithEmailPassword(data.email, data.password)
+            .catch((error) => {
+                if (!ERROR_MESSAGES[error.code]) {
+                    ERROR_MESSAGES[error.code] = error.message;
                 }
-            }
-            setError(field, { type: error.code, message: error.message });
-            setLoading(false);
-        }).then(()=>{
-            setLoading(false);
-        });
+                console.log(error.code);
+                let field = "password";
+                switch (error.code) {
+                    case "auth/user-not-found": {
+                        field = "email";
+                        break;
+                    }
+                }
+                setError(field, { type: error.code, message: error.message });
+                setLoading(false);
+            })
+            .then(() => {
+                setLoading(false);
+            });
     }
 
     return (
@@ -46,6 +48,7 @@ export default function LoginForm() {
             <Form.Group className="m-2">
                 <Form.Label>Email</Form.Label>
                 <Form.Control
+                    placeholder="Enter Email"
                     type="email"
                     {...register("email", {
                         required: true,
@@ -60,6 +63,7 @@ export default function LoginForm() {
             <Form.Group className="m-2">
                 <Form.Label>Password</Form.Label>
                 <Form.Control
+                    placeholder="Enter Password"
                     type="password"
                     {...register("password", { required: true, minLength: 6 })}
                 />
@@ -68,7 +72,9 @@ export default function LoginForm() {
                 </Form.Text>
             </Form.Group>
             <Form.Group className="m-2">
-                <Button disabled={loading} type="submit">{loading?"Loading...":"Login"}</Button>
+                <Button disabled={loading} type="submit">
+                    {loading ? "Loading..." : "Login"}
+                </Button>
             </Form.Group>
         </Form>
     );
